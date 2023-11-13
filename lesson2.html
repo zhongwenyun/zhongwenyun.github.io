@@ -1,0 +1,57 @@
+<html lang="cn">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="description" content="Chinese language by the natural method">
+		<meta name="keywords" content="HTML, CSS, JavaScript">
+		<meta name="author" content="Aurel Farkašovský">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>中文云</title>
+		<link href="./style.css" rel="stylesheet">
+    </head>
+    <body>
+		<header>
+			<a href="./index.html">
+				<img id="banner" src="./banner.svg" alt="中文云"/>
+			</a>
+		</header>
+		<nav>
+			<a href="./index.html">home</a>
+			<div class="dropdown">
+				<a href="./study.html" class="dropbtn">study</a>
+				<div class="dropdown-content">
+					<a href="./lesson1.html">lesson 1</a>
+					<a href="./tutorial.html">tutorial</a>
+				</div>
+			</div>
+		</nav>
+        <article class="main-content">
+            <section id="1">
+				<h1>lesson 2</h1>
+				<p class="segment">。</p>
+            </section>
+			<section id="operation">
+				<button type="button" id="prev">&lt;</button>
+				<button type="button" id="pinyin">pinyin</button>
+				<button type="button" id="next">&gt;</button>
+			</section>
+			<section id="space" hidden="true"></section>
+			<section id="etymology" hidden="true">
+				<h1>etymology</h1>
+				<img id="order" alt="order" width="100" height="100"/>
+				<p id="category"></p>
+				<p id="composition"></p>
+				<p id="note"></p>
+			</section>
+        </article>
+		<footer>
+			<p>
+			    author: Aurel Farkašovský<br>
+				<a href="mailto:aurel1510@gmail.com">
+					aurel1510@gmail.com
+				</a>
+			</p>
+		</footer>
+		<audio id="player"></audio>
+        <script src="./script.js"></script>
+    </body>
+</html>
