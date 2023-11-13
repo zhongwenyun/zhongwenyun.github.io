@@ -292,22 +292,27 @@ function explain(hanzi) {
 	show_etymology(hanzi);
 }
 
+function hide_dummy() {
+	var dummy_p = document.getElementById('0');
+	dummy_p.setAttribute("hidden", true);
+}
+
 function page_init() {
 	MAX = document.querySelectorAll(".segment").length;
 	
     const url = window.location.toLocaleString();
     const params = new URL(url).searchParams;
     if (params.has("index")) {
+        index = Number(params.get("index"));
         if (index_out_of_range()) {
             normalize_index();
             update_path();
         }
-        var curr_p = document.getElementById(String(index));
-        curr_p.setAttribute("hidden", true);
-        index = Number(params.get("index"));
-        var next_p = document.getElementById(String(index));
-        next_p.removeAttribute("hidden");
     }
+	
+	var curr_p = document.getElementById(String(index));
+	curr_p.removeAttribute("hidden");
+	hide_dummy();
 
     var next_btn = document.getElementById("next");
     next_btn.onclick = function() {

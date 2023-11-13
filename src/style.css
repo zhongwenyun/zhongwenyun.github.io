@@ -101,6 +101,9 @@ td {
 	text-align: center;
 	padding: 4px;
 }
+#emoji_dummy {
+	height: 32pt;
+}
 .pinyin {
 	font-size: 24px;
 }
