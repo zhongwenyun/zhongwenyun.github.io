@@ -81,9 +81,10 @@ section {
   padding-bottom: 0.5%;
   border: none;
 }
-#operation > button:hover {
+#operation > .working:hover {
   background-color: #FFAAAA;
   color: black;
+  cursor: pointer;
 }
 h1 {
 	color: #9F0000;
