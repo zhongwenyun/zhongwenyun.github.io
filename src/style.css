@@ -89,6 +89,9 @@ h1 {
 	color: #9F0000;
 	margin: 0;
 }
+.sentence {
+	color: #9F0000;
+}
 table {
 	margin-top: 1%;
 	margin-bottom: 1%;
@@ -96,10 +99,17 @@ table {
 	margin-left: auto;
 	margin-right: auto;
 }
+.bordered {
+	border-color: #CCCCCC;
+	border-style: solid;
+}
 td {
 	font-size: 32px;
 	text-align: center;
 	padding: 4px;
+}
+col:nth-child(even) {
+	background: #CCCCCC;
 }
 #emoji_dummy {
 	height: 32pt;

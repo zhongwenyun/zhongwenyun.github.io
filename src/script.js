@@ -1,6 +1,10 @@
 var MIN = 1;
 var MAX = 1;
 var index = MIN;
+var scrollPos = 0;
+var etym = "";
+var last_pinyin_height = 0;
+var difference = 0;
 var show_pinyin = false;
 
 var NOT_PLAYABLE = [' ', '，', '。', '？',];
@@ -9,6 +13,7 @@ var DICT = {
     ' ': [' ', ' ', " ", ' '],
     '，': [',', '，', ",", '，'],
     '。': ['.', '。', " ", '。'],
+	
     '？': ['?', '？', "?", '？'],
     '你': ['🫵', '你', "nǐ", '你'],
     '尔': ['🧵', '尔', "ěr", '爾'],
@@ -16,8 +21,8 @@ var DICT = {
     '早': ['🌅', '早', "zǎo", '早'],
     '止': ['🦶', '止', "zhǐ", '止'],
     '人': ['🧍', '人', "rén", '人'],
-    '他': ['👦', '他', "tā", '他'],
-    '她': ['👧', '她', "tā", '她'],
+    '他': ['👉👦', '他', "tā", '他'],
+    '她': ['👉👧', '她', "tā", '她'],
     '也': ['✔️', '也', "yě", '也'],
     '匜': ['🫖', '匜', "yí", '匜'],
     '爱': ['❤️', '爱', "ài", '愛'],
@@ -36,10 +41,51 @@ var DICT = {
     '口': ['👄', '口', "kǒu", '口'],
     '马': ['🐎', '马', "mǎ", '馬'],
     '和': ['➕', '和', "hé", '和'],
-    '禾': ['🌾', '禾', "hé", '禾'],
+    '禾': ['🌱', '禾', "hé", '禾'],
     '二': ['2️⃣', '二', "èr", '二'],
     '三': ['3️⃣', '三', "san", '三'],
+	
+	'有': ['✊', '有', "you", '有'],
+	'还': ['➕', '还', "hai", '还...'],
+	'目': ['👁️', '目', "mu", '目'],
+	'鼻': ['👃', '鼻', "bi", '鼻'],
+	'手': ['🖐', '手', "shou", '手'],
+	'足': ['🦶', '足', "zu", '足'],
+	'耳': ['👂', '耳', "er", '耳'],
+	'呢': ['🤔', '呢', "ne", '呢'],
+    '走': ['🚶', '走', "zou", '走'],
+    '在': ['📍🌏', '在', "zai", '在'],
+    '山': ['🏔️', '山', "shan", '山'],
+    '上': ['⬆️', '上', "shang", '上'],
+	
+    '木': ['🌳', '木', "mu", '木'],
+    '石': ['🪨', '石', "shi", '石'],
+    '水': ['💧', '水', "shui", '水'],
+    '步': ['👣', '步', "bu", '步'],
+    '跑': ['🏃', '跑', "pao", '跑'],
+	
+    '为': ['🤌', '为', "pao", '为'],
+    '何': ['🤷', '何', "he", '何'],
+    '因': ['💁', '因', "yin", '因'],
+    '虫': ['🪰', '虫', "chong", '虫'],
 };
+
+/*
+☀️@🌅⬆️
+日在天上。
+
+🌅💯🟦
+天很蓝。
+
+☁️🙅‍♂️@🌅⬆️
+云不在天上。
+
+🚹@🌅⬇️
+他在天下。
+
+🚹@🌏⬆️
+他在地上。
+*/
 
 var OGG = {
 	"nǐ": "https://upload.wikimedia.org/wikipedia/commons/7/73/Zh-n%C7%90.ogg",
@@ -212,22 +258,43 @@ function make_table(hanzi) {
 }
 
 function show_etymology(hanzi) {
+	if (ETYM[hanzi] == null) {
+		etym = "";
+	} else {
+		etym = hanzi;
+	}
 	var order = document.getElementById("order");
-	order.src = STROKE[hanzi];
+	if (STROKE[hanzi] == null) {
+		order.src = "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
+	} else {
+		order.src = STROKE[hanzi];
+	}
 	var space = document.getElementById("space");
 	space.removeAttribute("hidden");
 	var etymology = document.getElementById("etymology");
 	etymology.removeAttribute("hidden");
 	var category = document.getElementById("category");
-	category.innerHTML = ETYM[hanzi][0];
-	var composition = document.getElementById("composition");
-	composition.innerHTML = "";
-	composition.appendChild(make_table(hanzi));
-	var note = document.getElementById("note");
-	if (ETYM[hanzi].length >= 3) {
-		note.innerHTML = ETYM[hanzi][2];
+	if (ETYM[hanzi] == null) {
+		category.innerHTML = "coming soon"
 	} else {
-		note.innerHTML = "";
+		category.innerHTML = ETYM[hanzi][0];
+	}
+	var composition = document.getElementById("composition");
+	if (ETYM[hanzi] == null) {
+		composition.innerHTML = "coming soon";
+	} else {
+		composition.innerHTML = "";
+		composition.appendChild(make_table(hanzi));
+	}
+	var note = document.getElementById("note");
+	if (ETYM[hanzi] == null) {
+		note.innerHTML = "coming soon";
+	} else {
+		if (ETYM[hanzi].length >= 3) {
+			note.innerHTML = ETYM[hanzi][2];
+		} else {
+			note.innerHTML = "";
+		}
 	}
 }
 
@@ -236,6 +303,9 @@ function toggle_pinyin() {
 }
 
 function update_pinyin() {
+	if (!show_pinyin && difference != 0) {
+		window.scrollTo(window.scrollX, window.scrollY - difference);
+	}
 	var pinyins = document.querySelectorAll(".pinyin");
     for (i = 0; i < pinyins.length; ++i) {
 		if (show_pinyin) {
@@ -244,6 +314,14 @@ function update_pinyin() {
 			pinyins[i].setAttribute("hidden", true);
 		}
     }
+	if (show_pinyin) {
+		var new_pinyin_height = document.getElementById("pinyin_tr").clientHeight;
+		difference = new_pinyin_height - last_pinyin_height;
+		window.scrollTo(window.scrollX, window.scrollY + difference);
+		last_pinyin_height = new_pinyin_height;
+	} else {
+		last_pinyin_height = document.getElementById("pinyin_tr").clientHeight;
+	}
 }
 
 function get_path() {
@@ -252,6 +330,15 @@ function get_path() {
 
 function update_path() {
     var new_loc = get_path() + "?index=" + String(index);
+	if (scrollPos != 0) {
+		new_loc += "&scroll=" + String(scrollPos);
+	}
+	if (etym != "") {
+		new_loc += "&etym=" + etym;
+	}
+	if (show_pinyin) {
+		new_loc += "&pinyin=1";
+	}
     window.location.replace(new_loc);
 }
 
@@ -292,9 +379,77 @@ function explain(hanzi) {
 	show_etymology(hanzi);
 }
 
+function hide(elem) {
+	elem.setAttribute("hidden", true);
+}
+
+function unhide(elem) {
+	elem.removeAttribute("hidden");
+}
+
 function hide_dummy() {
-	var dummy_p = document.getElementById('0');
-	dummy_p.setAttribute("hidden", true);
+	var dummy = document.getElementById('0');
+	hide(dummy);
+}
+
+function make_curr_table() {
+	var curr_p = document.getElementById(String(index)).childNodes[3];
+	var data = curr_p.innerHTML;
+	curr_p.innerHTML = "";
+	var table = document.createElement("table");
+	var temp = "<colgroup>"
+	for (var col = 0; col < data.length; ++col) {
+		if (col == 0) {
+			temp += "<col>";
+		} else {
+			temp += "<col class=\"bordered\">";
+		}
+	}
+	temp += "</colgroup>";
+	table.innerHTML = temp;
+	for (var j = 0; j < 3; ++j) {
+		var tr = table.insertRow();
+		if (j == 2) {
+			tr.setAttribute("id", "pinyin_tr");
+		}
+		for (var k = 0; k < data.length; ++k) {
+			if (k == 0 && j != 1) {
+				var empty = tr.insertCell();
+				var space = document.createElement("span");
+				if (j == 0) {
+					space.innerHTML = String(index) + ':';
+					space.setAttribute("class", "sentence");
+					empty.setAttribute("rowspan", 2);
+					
+				} else {
+					space.innerHTML = ' ';
+				}
+				if (j == 2) {
+					space.setAttribute("class", "pinyin");
+					if (!show_pinyin) {
+						space.setAttribute("hidden", true);
+					}
+				}
+				empty.appendChild(space);
+			}
+			var td = tr.insertCell();
+			var span = document.createElement("span");
+			span.innerHTML = DICT[data[k]][j];
+			if (j == 1) {
+				if (!NOT_PLAYABLE.includes(span.innerHTML)) {
+					span.setAttribute("class", "explainable");
+					span.setAttribute("onclick", "explain('" + span.innerHTML + "')");
+				}
+			} else if (j == 2) {
+				span.setAttribute("class", "pinyin");
+				if (!show_pinyin) {
+					span.setAttribute("hidden", true);
+				}
+			}
+			td.appendChild(span);
+		}
+	}
+	curr_p.appendChild(table);
 }
 
 function page_init() {
@@ -302,6 +457,15 @@ function page_init() {
 	
     const url = window.location.toLocaleString();
     const params = new URL(url).searchParams;
+    if (params.has("scroll")) {
+        scrollPos = Number(params.get("scroll"));
+    }
+    if (params.has("etym")) {
+        etym = params.get("etym");
+    }
+    if (params.has("pinyin")) {
+        show_pinyin = Number(params.get("pinyin")) == 1;
+    }
     if (params.has("index")) {
         index = Number(params.get("index"));
         if (index_out_of_range()) {
@@ -309,14 +473,25 @@ function page_init() {
             update_path();
         }
     }
-	
-	var curr_p = document.getElementById(String(index));
-	curr_p.removeAttribute("hidden");
+	make_curr_table();
+	var curr_section = document.getElementById(String(index));
 	hide_dummy();
+	unhide(curr_section);
+	if (show_pinyin) {
+		update_pinyin();
+	}
+	if (etym != "") {
+		show_etymology(etym);
+	}
+	if (scrollPos != 0) {
+		window.scrollTo(0, scrollPos);
+	}
+	last_pinyin_height = document.getElementById("pinyin_tr").clientHeight;
 
     var next_btn = document.getElementById("next");
     next_btn.onclick = function() {
         if (increment()) {
+			scrollPos = Math.round(window.scrollY);
             update_path();
         }
     };
@@ -330,49 +505,10 @@ function page_init() {
     var prev_btn = document.getElementById("prev");
     prev_btn.onclick = function() {
         if (decrement()) {
+			scrollPos = Math.round(window.scrollY);
             update_path();
         }
     };
-
-	var lines = document.querySelectorAll(".segment");
-    for (var i = 0; i < lines.length; ++i) {
-		var data = lines[i].innerHTML;
-		lines[i].innerHTML = "";
-		var table = document.createElement("table");
-		for (var j = 0; j < 3; ++j) {
-			var tr = table.insertRow();
-			for (var k = 0; k < data.length; ++k) {
-				if (k == 0) {
-					var empty = tr.insertCell();
-					var space = document.createElement("span");
-					space.innerHTML = ' ';
-					if (j == 2) {
-						space.setAttribute("class", "pinyin");
-						if (!show_pinyin) {
-							space.setAttribute("hidden", true);
-						}
-					}
-					empty.appendChild(space);
-				}
-				var td = tr.insertCell();
-				var span = document.createElement("span");
-				span.innerHTML = DICT[data[k]][j];
-				if (j == 1) {
-					if (!NOT_PLAYABLE.includes(span.innerHTML)) {
-						span.setAttribute("class", "explainable");
-						span.setAttribute("onclick", "explain('" + span.innerHTML + "')");
-					}
-				} else if (j == 2) {
-					span.setAttribute("class", "pinyin");
-					if (!show_pinyin) {
-						span.setAttribute("hidden", true);
-					}
-				}
-				td.appendChild(span);
-			}
-		}
-		lines[i].appendChild(table);
-	}
 }
 
 page_init();
