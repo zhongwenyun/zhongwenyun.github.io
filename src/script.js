@@ -149,6 +149,11 @@ var STROKE = {
 	'二': "https://upload.wikimedia.org/wikipedia/commons/8/8e/%E4%BA%8C-order.gif",
 };
 
+String.prototype.rsplit = function(sep, maxsplit) {
+    var split = this.split(sep);
+    return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
+}
+
 var PS_COMP = ['ℹ️', ' ', '🗣️', ' ', '✍️'];
 var PS_COMP_INFO = ["semantic component", "", "phonetic component", "", "written result"];
 
@@ -324,12 +329,17 @@ function update_pinyin() {
 	}
 }
 
-function get_path() {
-    return location.protocol + '//' + location.host + location.pathname;
+function get_base_path() {
+	return location.protocol + '//' + location.host;
 }
 
-function update_path() {
-    var new_loc = get_path() + "?index=" + String(index);
+function get_path() {
+    return get_base_path() + location.pathname;
+}
+
+function update_path(path) {
+	path = path == null ? get_path() : path;
+    var new_loc = path + "?index=" + String(index);
 	if (scrollPos != 0) {
 		new_loc += "&scroll=" + String(scrollPos);
 	}
@@ -394,66 +404,58 @@ function hide_dummy() {
 
 function make_curr_table() {
 	var curr_p = document.getElementById(String(index)).childNodes[3];
-	var data = curr_p.innerHTML;
-	curr_p.innerHTML = "";
-	var table = document.createElement("table");
-	var temp = "<colgroup>"
-	for (var col = 0; col < data.length; ++col) {
-		if (col == 0) {
-			temp += "<col>";
-		} else {
-			temp += "<col class=\"bordered\">";
+	if (curr_p.getAttribute("class") == "segment") {
+		var data = curr_p.innerHTML;
+		curr_p.innerHTML = "";
+		var table = document.createElement("table");
+		var temp = "<colgroup>"
+		for (var col = 0; col < data.length; ++col) {
+			if (col == 0) {
+				temp += "<col>";
+			} else {
+				temp += "<col class=\"bordered\">";
+			}
 		}
-	}
-	temp += "</colgroup>";
-	table.innerHTML = temp;
-	for (var j = 0; j < 3; ++j) {
-		var tr = table.insertRow();
-		if (j == 2) {
-			tr.setAttribute("id", "pinyin_tr");
-		}
-		for (var k = 0; k < data.length; ++k) {
-			if (k == 0 && j != 1) {
-				var empty = tr.insertCell();
-				var space = document.createElement("span");
-				if (j == 0) {
+		temp += "</colgroup>";
+		table.innerHTML = temp;
+		for (var j = 0; j < 3; ++j) {
+			var tr = table.insertRow();
+			if (j == 2) {
+				tr.setAttribute("id", "pinyin_tr");
+			}
+			for (var k = 0; k < data.length; ++k) {
+				if (k == 0 && j == 0) {
+					var empty = tr.insertCell();
+					var space = document.createElement("span");
 					space.innerHTML = String(index) + ':';
 					space.setAttribute("class", "sentence");
-					empty.setAttribute("rowspan", 2);
-					
-				} else {
-					space.innerHTML = ' ';
+					empty.setAttribute("rowspan", 3);
+					empty.appendChild(space);
 				}
-				if (j == 2) {
-					space.setAttribute("class", "pinyin");
+				var td = tr.insertCell();
+				var span = document.createElement("span");
+				span.innerHTML = DICT[data[k]][j];
+				if (j == 1) {
+					if (!NOT_PLAYABLE.includes(span.innerHTML)) {
+						span.setAttribute("class", "explainable");
+						span.setAttribute("onclick", "explain('" + span.innerHTML + "')");
+					}
+				} else if (j == 2) {
+					span.setAttribute("class", "pinyin");
 					if (!show_pinyin) {
-						space.setAttribute("hidden", true);
+						span.setAttribute("hidden", true);
 					}
 				}
-				empty.appendChild(space);
+				td.appendChild(span);
 			}
-			var td = tr.insertCell();
-			var span = document.createElement("span");
-			span.innerHTML = DICT[data[k]][j];
-			if (j == 1) {
-				if (!NOT_PLAYABLE.includes(span.innerHTML)) {
-					span.setAttribute("class", "explainable");
-					span.setAttribute("onclick", "explain('" + span.innerHTML + "')");
-				}
-			} else if (j == 2) {
-				span.setAttribute("class", "pinyin");
-				if (!show_pinyin) {
-					span.setAttribute("hidden", true);
-				}
-			}
-			td.appendChild(span);
 		}
+		curr_p.appendChild(table);
 	}
-	curr_p.appendChild(table);
 }
 
 function page_init() {
-	MAX = document.querySelectorAll(".segment").length;
+	var actual_length = document.querySelectorAll(".segment").length;
+	MAX = actual_length == 0 ? actual_length+1 : actual_length;
 	
     const url = window.location.toLocaleString();
     const params = new URL(url).searchParams;
@@ -477,7 +479,7 @@ function page_init() {
 	var curr_section = document.getElementById(String(index));
 	hide_dummy();
 	unhide(curr_section);
-	if (show_pinyin) {
+	if (show_pinyin && actual_length > 0) {
 		update_pinyin();
 	}
 	if (etym != "") {
@@ -486,29 +488,50 @@ function page_init() {
 	if (scrollPos != 0) {
 		window.scrollTo(0, scrollPos);
 	}
-	last_pinyin_height = document.getElementById("pinyin_tr").clientHeight;
+	var pinyin_tr = document.getElementById("pinyin_tr");
+	last_pinyin_height = pinyin_tr == null ? 0 : pinyin_tr.clientHeight;
 
     var next_btn = document.getElementById("next");
-    next_btn.onclick = function() {
-        if (increment()) {
-			scrollPos = Math.round(window.scrollY);
-            update_path();
-        }
-    };
+	if (next_btn != null) {
+		next_btn.onclick = function() {
+			if (increment()) {
+				scrollPos = Math.round(window.scrollY);
+				update_path();
+			} else {
+				var array = location.pathname.rsplit("/", 1);
+				var temp = Number(array[1].split(".html")[0]);
+				temp = array[0] + "/0" + String(temp+1) + ".html";
+				index = 1;
+				update_path(temp);
+			}
+		};
+	}
 	
 	var pinyin_btn = document.getElementById("pinyin");
-    pinyin_btn.onclick = function() {
-        toggle_pinyin();
-		update_pinyin();
-    };
+	if (pinyin_btn != null) {
+		pinyin_btn.onclick = function() {
+			toggle_pinyin();
+			update_pinyin();
+		};
+	}
 
     var prev_btn = document.getElementById("prev");
-    prev_btn.onclick = function() {
-        if (decrement()) {
-			scrollPos = Math.round(window.scrollY);
-            update_path();
-        }
-    };
+	if (prev_btn != null) {
+		prev_btn.onclick = function() {
+			if (decrement()) {
+				scrollPos = Math.round(window.scrollY);
+				update_path();
+			} else {
+				var array = location.pathname.rsplit("/", 1);
+				var temp = Number(array[1].split(".html")[0]);
+				if (temp > 1) {
+					temp = array[0] + "/0" + String(temp-1) + ".html";
+					index = 999;
+					update_path(temp);
+				}
+			}
+		};
+	}
 }
 
 page_init();
