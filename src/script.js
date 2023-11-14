@@ -494,8 +494,8 @@ function page_init() {
     var next_btn = document.getElementById("next");
 	if (next_btn != null) {
 		next_btn.onclick = function() {
+			scrollPos = Math.round(window.scrollY);
 			if (increment()) {
-				scrollPos = Math.round(window.scrollY);
 				update_path();
 			} else {
 				var array = location.pathname.rsplit("/", 1);
@@ -527,6 +527,7 @@ function page_init() {
 				if (temp > 1) {
 					temp = array[0] + "/0" + String(temp-1) + ".html";
 					index = 999;
+					scrollPos = Math.round(window.scrollY);
 					update_path(temp);
 				}
 			}
