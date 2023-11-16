@@ -124,7 +124,6 @@ col:nth-child(even) {
 .info {
 	cursor: help;
 }
-
 .dropdown {
 	position: relative;
 	display: inline-block;

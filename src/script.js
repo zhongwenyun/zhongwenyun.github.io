@@ -9,71 +9,111 @@ var show_pinyin = false;
 
 var NOT_PLAYABLE = [' ', '，', '。', '？',];
 
+var EMOJI_INDEX = 0;
+var PINYIN_INDEX = 1;
+var TRAD_INDEX = 2;
 var DICT = {
-    ' ': [' ', ' ', " ", ' '],
-    '，': [',', '，', ",", '，'],
-    '。': ['.', '。', " ", '。'],
+    ' ': [' ', " "],
+    '，': [',', " "],
+    '。': ['.', " "],
+    '？': ['?', " "],
 	
-    '？': ['?', '？', " ", '？'],
-    '你': ['🫵', '你', "nǐ", '你'],
-    '尔': ['🧵', '尔', "ěr", '爾'],
-    '是': ['🟰', '是', "shì", '是'],
-    '早': ['🌅', '早', "zǎo", '早'],
-    '止': ['🦶', '止', "zhǐ", '止'],
-    '人': ['🧍', '人', "rén", '人'],
-    '他': ['👉👦', '他', "tā", '他'],
-    '她': ['👉👧', '她', "tā", '她'],
-    '也': ['✔️', '也', "yě", '也'],
-    '匜': ['🫖', '匜', "yí", '匜'],
-    '爱': ['❤️', '爱', "ài", '愛'],
-    '旡': ['🧎', '旡', "jì", '旡'],
-    '心': ['🫀', '心', "xīn", '心'],
-    '㤅': ['❤️', '㤅', "ài", '㤅'],
-    '肉': ['🍖', '肉', "ròu", '肉'],
-    '不': ['🙅', '不', "bù", '不'],
-    '柎': ['🌻', '柎', "fū", '柎'],
-    '女': ['🚺', '女', "nǚ", '女'],
-    '男': ['🚹', '男', "nán", '男'],
-    '田': ['🌾', '田', "tián", '田'],
-    '力': ['💪', '力', "lì", '力'],
-    '一': ['1️⃣', '一', "yī", '一'],
-    '吗': ['🤷', '吗', "ma", '嗎'],
-    '口': ['👄', '口', "kǒu", '口'],
-    '马': ['🐎', '马', "mǎ", '馬'],
-    '和': ['➕', '和', "hé", '和'],
-    '禾': ['🌱', '禾', "hé", '禾'],
-    '二': ['2️⃣', '二', "èr", '二'],
-    '三': ['3️⃣', '三', "san", '三'],
+	/*etymology*/
+    '尔': ['🧵', "ěr", '爾'],
+    '早': ['🌅', "zǎo"],
+    '止': ['🦶', "zhǐ"],
+    '匜': ['🫖', "yí"],
+    '旡': ['🧎', "jì"],
+    '心': ['🫀', "xīn"],
+    '㤅': ['❤️', "ài"],
+    '柎': ['🌻', "fū"],
+    '田': ['🌾', "tián"],
+    '力': ['💪', "lì"],
+    '口': ['👄', "kǒu"],
+    '马': ['🐎', "mǎ", '馬'],
+    '禾': ['🌱', "hé"],
+    '二': ['2️⃣', "èr"],
+	'目': ['👁️', "mù"],
+	'足': ['🦶', "zú"],
+    '何': ['🤷', "hé"],
 	
-	'有': ['✊', '有', "you", '有'],
-	'还': ['➕', '还', "hai", '还...'],
-	'目': ['👁️', '目', "mu", '目'],
-	'鼻': ['👃', '鼻', "bi", '鼻'],
-	'手': ['🖐', '手', "shou", '手'],
-	'足': ['🦶', '足', "zu", '足'],
-	'耳': ['👂', '耳', "er", '耳'],
-	'呢': ['🤔', '呢', "ne", '呢'],
-    '走': ['🚶', '走', "zou", '走'],
-    '在': ['📍🌏', '在', "zai", '在'],
-    '山': ['🏔️', '山', "shan", '山'],
-    '上': ['⬆️', '上', "shang", '上'],
+	/*lesson 1*/
+    '你': ['🫵', "nǐ"],
+    '是': ['🟰', "shì"],
+    '人': ['🧍', "rén"],
+    '他': ['👉👦', "tā"],
+    '她': ['👉👧', "tā"],
+    '也': ['✔️', "yě"],
+    '爱': ['❤️', "ài", '愛'],
+    '肉': ['🍖', "ròu"],
+    '不': ['🙅', "bù"],
+    '女人': ['🚺🧍', "nǚrén"],
+    '女': ['🚺', "nǚ"],
+	'呢': ['🤔', "ne"],
+    '男人': ['🚹🧍', "nánrén"],
+    '男': ['🚹', "nán"],
+    '一个': ['1️⃣🧮', "yīge", '一個'],
+    '一': ['1️⃣', "yī"],
+    '个': ['🧮', "gè", '個'],
+    '吗': ['🤷', "ma", '嗎'],
+    '和': ['➕', "hé"],
+    '两个': ['2️⃣🧮', "liǎngge", '兩個'],
+    '两': ['2️⃣', "liǎng", '兩'],
+    '三个': ['3️⃣🧮', "sānge", '三個'],
+    '三': ['3️⃣', "sān"],
 	
-    '木': ['🌳', '木', "mu", '木'],
-    '石': ['🪨', '石', "shi", '石'],
-    '水': ['💧', '水', "shui", '水'],
-    '步': ['👣', '步', "bu", '步'],
-    '跑': ['🏃', '跑', "pao", '跑'],
+	/*lesson 2*/
+	'有': ['✊', "yǒu"],
+	'嘴巴': ['👄', "zuǐba"],
+	'嘴': ['👄', "zuǐ"],
+	'巴': ['👄', "ba"],
+	'眼睛': ['👁️', "yǎnjing"],
+	'眼': ['👁️', "yǎn"],
+	'睛': ['👁️', "jīng"],
+	'还有': ['➕✊', "háiyǒu", "還有"],
+	'还': ['➕', "hái", '還'],
+	'鼻子': ['👃', "bízi"],
+	'鼻': ['👃', "bí"],
+	'子': ['👶', "zǐ"],
+	'手': ['🖐', "shǒu"],
+	'脚': ['🦶', "jiǎo", '腳'],
+	'耳朵': ['👂', "ěrduo"],
+	'耳': ['👂', "ěr", '耳'],
+	'朵': ['👂', "duǒ"],
+	'没有': ['🙅✊', "méiyou", "沒有"],
+	'没': ['🙅', "méi", "沒"],
+    '走': ['🚶', "zǒu"],
+    '在': ['📍', "zài"],//📍🌏
+	'山上': ['🏔️⬆️', "shānshang"],
+    '山': ['🏔️', "shān"],
+    '上': ['⬆️', "shàng"],
+	'树木': ['🌳', "shùmù", "樹木"],
+	'树': ['🌳', "shù", "樹"],
+    '木': ['🌳', "mù"],
+    '石头': ['🪨', "shítou", "石頭"],
+    '石': ['🪨', "shí"],
+    '头': ['🪨', "tóu", "頭"],
+    '水': ['💧', "shuǐ"],
+    '一步': ['1️⃣👣', "yíbù"],
+    '步': ['👣', "bù"],
+    '跑': ['🏃', "pǎo"],
+    '了': ['🔄', "le"],
+    '为什么': ['🤌🤷', "wèishénme", '為什麼'],
+	'为': ['🤌', "wèi", '為'],
+	'什么': ['🤷', "shénme", '什麼'],
+	'什': ['🤷', "shén"],
+	'么': ['🤷', "me", '麼'],
+    '因为': ['💁🤌', "yīnwèi", '因為'],
+    '因': ['💁', "yīn"],
+    '虫子': ['🪰', "chóngzi", '蟲子'],
+    '虫': ['🪰', "chóng", '蟲'],
 	
-    '为': ['🤌', '为', "pao", '为'],
-    '何': ['🤷', '何', "he", '何'],
-    '因': ['💁', '因', "yin", '因'],
-    '虫': ['🪰', '虫', "chong", '虫'],
+	'天上': ['🌤️⬆️', "tiānshang"],
+    '天': ['🌤️', "tiān"],
+	'日': ['☀️', "rì"],
 };
 
 /*
-☀️@🌅⬆️
-日在天上。
-
 🌅💯🟦
 天很蓝。
 
@@ -88,21 +128,28 @@ var DICT = {
 */
 
 var OGG = {
-	"nǐ": "https://upload.wikimedia.org/wikipedia/commons/7/73/Zh-n%C7%90.ogg",
-	"shì": "https://upload.wikimedia.org/wikipedia/commons/6/60/Zh-sh%C3%AC.ogg",
+	/*etymology*/
 	"zǎo": "https://upload.wikimedia.org/wikipedia/commons/8/83/Zh-z%C7%8Eo.ogg",
 	"zhǐ": "https://upload.wikimedia.org/wikipedia/commons/0/09/Zh-zh%C7%90.ogg",
+	"yí": "https://upload.wikimedia.org/wikipedia/commons/2/29/Zh-y%C3%AD.ogg",
+	"jì": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Zh-j%C3%AC.ogg",
+	"xīn": "https://upload.wikimedia.org/wikipedia/commons/6/64/Zh-x%C4%ABn.ogg",
+	
+	/*lesson 1*/
+	"nǐ": "https://upload.wikimedia.org/wikipedia/commons/7/73/Zh-n%C7%90.ogg",
+	"shì": "https://upload.wikimedia.org/wikipedia/commons/6/60/Zh-sh%C3%AC.ogg",
 	"rén": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Zh-r%C3%A9n.ogg",
 	"tā": "https://upload.wikimedia.org/wikipedia/commons/0/09/Zh-t%C4%81.ogg",
 	"yě": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Zh-y%C4%9B.ogg",
-	"yí": "https://upload.wikimedia.org/wikipedia/commons/2/29/Zh-y%C3%AD.ogg",
 	"ài": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Zh-%C3%A0i.ogg",
-	"jì": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Zh-j%C3%AC.ogg",
-	"xīn": "https://upload.wikimedia.org/wikipedia/commons/6/64/Zh-x%C4%ABn.ogg",
 	"ròu": "https://upload.wikimedia.org/wikipedia/commons/2/28/Zh-r%C3%B2u.ogg",
 	"bù": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Zh-b%C3%B9.ogg",
+	"nǚrén": "https://upload.wikimedia.org/wikipedia/commons/7/75/Zh-nur%C3%A9n.ogg",
 	"nǚ": "https://upload.wikimedia.org/wikipedia/commons/7/73/Zh-n%C7%9A.ogg",
+	"nánrén": "https://upload.wikimedia.org/wikipedia/commons/2/29/Zh-n%C3%A1nr%C3%A9n.ogg",
 	"nán": "https://upload.wikimedia.org/wikipedia/commons/1/15/Zh-n%C3%A1n.ogg",
+	
+	/*lesson 2*/
 	"tián": "https://upload.wikimedia.org/wikipedia/commons/5/50/Zh-ti%C3%A1n.ogg",
 	"lì": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Zh-l%C3%AC.ogg",
 	"yī": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Zh-y%C4%AB.ogg",
@@ -149,6 +196,10 @@ var STROKE = {
 	'二': "https://upload.wikimedia.org/wikipedia/commons/8/8e/%E4%BA%8C-order.gif",
 };
 
+var BACK = {
+	'🌤️': "blue",
+};
+
 String.prototype.rsplit = function(sep, maxsplit) {
     var split = this.split(sep);
     return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
@@ -175,7 +226,7 @@ function make_table(hanzi) {
 	for (var i = 0; i < ETYM[hanzi][1].length; ++i) {
 		var td = symbol_row.insertCell();
 		var span = document.createElement("span");
-		span.innerHTML = DICT[ETYM[hanzi][1][i]][0];
+		span.innerHTML = DICT[ETYM[hanzi][1][i]][EMOJI_INDEX];
 		td.appendChild(span);
 	}
 	var hanzi_row = table.insertRow();
@@ -252,7 +303,7 @@ function make_table(hanzi) {
 	for (i = 0; i < ETYM[hanzi][1].length; ++i) {
 		var td = pinyin_row.insertCell();
 		var span = document.createElement("span");
-		span.innerHTML = DICT[ETYM[hanzi][1][i]][2];
+		span.innerHTML = DICT[ETYM[hanzi][1][i]][PINYIN_INDEX];
 		span.setAttribute("class", "pinyin");
 		if (!show_pinyin) {
 			span.setAttribute("hidden", true);
@@ -262,7 +313,7 @@ function make_table(hanzi) {
 	return table;
 }
 
-function show_etymology(hanzi) {
+function explain(hanzi) {
 	if (ETYM[hanzi] == null) {
 		etym = "";
 	} else {
@@ -373,20 +424,15 @@ function decrement() {
     return old != index;
 }
 
-function play(sentence) {
+function play(word) {
     var player = document.getElementById("player");
-    for (var i = 0; i < sentence.length; ++i) {
-		player.src = OGG[DICT[sentence[i]][2]];
-        player.play();
-		if (sentence.length > 1) {
-			wait(1000);
-		}
-    }
+	player.src = OGG[DICT[word][PINYIN_INDEX]];
+	player.play();
 }
 
-function explain(hanzi) {
+function play_and_explain(hanzi) {
 	play(hanzi);
-	show_etymology(hanzi);
+	explain(hanzi);
 }
 
 function hide(elem) {
@@ -402,55 +448,145 @@ function hide_dummy() {
 	hide(dummy);
 }
 
-function make_curr_table() {
-	var curr_p = document.getElementById(String(index)).childNodes[3];
-	if (curr_p.getAttribute("class") == "segment") {
-		var data = curr_p.innerHTML;
-		curr_p.innerHTML = "";
-		var table = document.createElement("table");
-		var temp = "<colgroup>"
-		for (var col = 0; col < data.length; ++col) {
-			if (col == 0) {
-				temp += "<col>";
-			} else {
-				temp += "<col class=\"bordered\">";
-			}
+function get_data_array(data) {
+	var result = [];
+	for (var i = 0; i < data.length; ++i) {
+		var temp = data[i]
+		if (i < data.length-1 && DICT[temp + data[i+1]] != null) {
+			temp += data[i+1];
+			++i;
+		} else if (i < data.length-2 && DICT[temp + data[i+1] + data[i+2]] != null) {
+			temp += data[i+1] + data[i+2];
+			i += 2;
 		}
-		temp += "</colgroup>";
-		table.innerHTML = temp;
-		for (var j = 0; j < 3; ++j) {
-			var tr = table.insertRow();
-			if (j == 2) {
-				tr.setAttribute("id", "pinyin_tr");
-			}
-			for (var k = 0; k < data.length; ++k) {
-				if (k == 0 && j == 0) {
-					var empty = tr.insertCell();
-					var space = document.createElement("span");
-					space.innerHTML = String(index) + ':';
-					space.setAttribute("class", "sentence");
-					empty.setAttribute("rowspan", 3);
-					empty.appendChild(space);
-				}
-				var td = tr.insertCell();
+		result.push(temp);
+	}
+	return result;
+}
+
+function make_char_span(hanzi) {
+	var char_span = document.createElement("span");
+	char_span.innerHTML = hanzi;
+	if (!NOT_PLAYABLE.includes(hanzi)) {
+		var isPlayable = (OGG[DICT[hanzi][PINYIN_INDEX]] != null);
+		var isExplainable = (ETYM[hanzi] != null);
+		if (isPlayable && isExplainable) {
+			char_span.classList.add("playable");
+			char_span.classList.add("explainable");
+			char_span.setAttribute("onclick", "play_and_explain('" + hanzi + "')");
+		} else if (isPlayable) {
+			char_span.classList.add("playable");
+			char_span.setAttribute("onclick", "play('" + hanzi + "')");
+		} else if (isExplainable) {
+			char_span.classList.add("explainable");
+			char_span.setAttribute("onclick", "explain('" + hanzi + "')");
+		}
+	}
+	return char_span;
+}
+
+function get_emoji_array(data) {
+	var string = DICT[data][EMOJI_INDEX];
+	var i = 0;
+	var result = [];
+	var temp = "";
+	while (i < string.length) {
+		temp += string[i];
+		if (EMOJIS.includes(temp)) {
+			result.push(temp);
+			temp = "";
+		}
+		++i;
+	}
+	if (EMOJIS.includes(temp)) {
+		result.push(temp);
+		temp = "";
+	}
+	return result;
+}
+
+function make_curr_table() {
+	var curr_p = document.getElementById(String(index)).querySelector(".segment");
+
+	var data = get_data_array(curr_p.innerHTML);
+	curr_p.innerHTML = "";
+	
+	var table = document.createElement("table");
+	
+	var colgroup = "<colgroup>"
+	for (var i = 0; i < data.length; ++i) {
+		if (i == 0) {
+			colgroup += "<col>";
+		} else {
+			colgroup += "<col class=\"bordered\">";
+		}
+	}
+	colgroup += "</colgroup>";
+	table.innerHTML = colgroup;
+	
+	var emoji_row = table.insertRow();
+	for (i = 0; i < data.length; ++i) {
+		if (i == 0) {
+			var empty = emoji_row.insertCell();
+			var space = document.createElement("span");
+			space.innerHTML = String(index) + ':';
+			space.setAttribute("class", "sentence");
+			empty.setAttribute("rowspan", 3);
+			empty.appendChild(space);
+		}
+		var td = emoji_row.insertCell();
+		var span = document.createElement("span");
+		span.innerHTML = DICT[data[i]][EMOJI_INDEX];
+		td.appendChild(span);
+	}
+	
+	var hanzi_row = table.insertRow();
+	for (i = 0; i < data.length; ++i) {
+		var td = hanzi_row.insertCell();
+		if (data[i].length == 1) {
+			var char_span = make_char_span(data[i]);
+			td.appendChild(char_span);
+		} else if (data[i].length > 1) {
+			// entire word playable
+			if (OGG[DICT[data[i]][PINYIN_INDEX]] != null) {
 				var span = document.createElement("span");
-				span.innerHTML = DICT[data[k]][j];
-				if (j == 1) {
-					if (!NOT_PLAYABLE.includes(span.innerHTML)) {
-						span.setAttribute("class", "explainable");
-						span.setAttribute("onclick", "explain('" + span.innerHTML + "')");
-					}
-				} else if (j == 2) {
-					span.setAttribute("class", "pinyin");
-					if (!show_pinyin) {
-						span.setAttribute("hidden", true);
+				if (!NOT_PLAYABLE.includes(data[i])) {
+					span.classList.add("playable");
+					span.setAttribute("onclick", "play('" + data[i] + "')");
+				}
+				for (var j = 0; j < data[i].length; ++j) {
+					var char_span = document.createElement("span");
+					char_span.innerHTML = data[i][j];
+					if (!NOT_PLAYABLE.includes(data[i][j]) && ETYM[data[i][j]] != null) {
+						char_span.classList.add("explainable");
+						char_span.setAttribute("onclick", "explain('" + data[i][j] + "')");
 					}
 				}
 				td.appendChild(span);
+			} else {
+				// play only single chars
+				for (var j = 0; j < data[i].length; ++j) {
+					var char_span = make_char_span(data[i][j])
+					td.appendChild(char_span);
+				}
 			}
 		}
-		curr_p.appendChild(table);
 	}
+	
+	var pinyin_row = table.insertRow();
+	pinyin_row.setAttribute("id", "pinyin_tr");
+	for (i = 0; i < data.length; ++i) {
+		var td = pinyin_row.insertCell();
+		var span = document.createElement("span");
+		span.innerHTML = DICT[data[i]][PINYIN_INDEX];
+		span.setAttribute("class", "pinyin");
+		if (!show_pinyin) {
+			span.setAttribute("hidden", true);
+		}
+		td.appendChild(span);
+	}
+	
+	curr_p.appendChild(table);
 }
 
 function page_init() {
@@ -483,7 +619,7 @@ function page_init() {
 		update_pinyin();
 	}
 	if (etym != "") {
-		show_etymology(etym);
+		explain(etym);
 	}
 	if (scrollPos != 0) {
 		window.scrollTo(0, scrollPos);
